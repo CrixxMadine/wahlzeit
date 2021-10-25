@@ -67,7 +67,12 @@ public class Photo extends DataObject {
 	protected int width;
 	protected int height;
 	protected PhotoSize maxPhotoSize = PhotoSize.MEDIUM; // derived
-	
+
+	/**
+	 *
+	 */
+	private Location location;
+
 	/**
 	 * 
 	 */
@@ -362,6 +367,14 @@ public class Photo extends DataObject {
 
 		incWriteCount();
 	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
 	
 	/**
 	 * Can this photo satisfy provided photo size?
@@ -462,5 +475,4 @@ public class Photo extends DataObject {
 	public long getCreationTime() {
 		return creationTime;
 	}
-	
 }
