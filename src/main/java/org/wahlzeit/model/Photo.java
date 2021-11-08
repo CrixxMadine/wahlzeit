@@ -16,6 +16,12 @@ import org.wahlzeit.utils.*;
  */
 public class Photo extends DataObject {
 
+	private static class ColumnLabels {
+		public static final String X_COORDINATE = "x_coordinate";
+		public static final String Y_COORDINATE = "y_coordinate";
+		public static final String Z_COORDINATE = "z_coordinate";
+	}
+
 	/**
 	 * 
 	 */
@@ -68,10 +74,7 @@ public class Photo extends DataObject {
 	protected int height;
 	protected PhotoSize maxPhotoSize = PhotoSize.MEDIUM; // derived
 
-	/**
-	 *
-	 */
-	private Location location;
+	protected Location location = new Location(new Coordinate(0,0,0));
 
 	/**
 	 * 
@@ -154,6 +157,12 @@ public class Photo extends DataObject {
 		creationTime = rset.getLong("creation_time");
 
 		maxPhotoSize = PhotoSize.getFromWidthHeight(width, height);
+
+		var x_coordinate = rset.getDouble(ColumnLabels.X_COORDINATE);
+		var y_coordinate = rset.getDouble(ColumnLabels.Y_COORDINATE);
+		var z_coordinate = rset.getDouble(ColumnLabels.Z_COORDINATE);
+		var coordinate = new Coordinate(x_coordinate, y_coordinate, z_coordinate);
+		location = new Location(coordinate);
 	}
 	
 	/**
@@ -173,7 +182,11 @@ public class Photo extends DataObject {
 		rset.updateInt("status", status.asInt());
 		rset.updateInt("praise_sum", praiseSum);
 		rset.updateInt("no_votes", noVotes);
-		rset.updateLong("creation_time", creationTime);		
+		rset.updateLong("creation_time", creationTime);
+
+		rset.updateDouble(ColumnLabels.X_COORDINATE, location.getCoordinate().getX());
+		rset.updateDouble(ColumnLabels.Y_COORDINATE, location.getCoordinate().getY());
+		rset.updateDouble(ColumnLabels.Z_COORDINATE, location.getCoordinate().getZ());
 	}
 
 	/**
