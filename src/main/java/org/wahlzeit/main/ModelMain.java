@@ -10,6 +10,8 @@ import java.io.FileFilter;
 import java.sql.*;
 
 import org.wahlzeit.model.*;
+import org.wahlzeit.model.extension.CatPhotoFactory;
+import org.wahlzeit.model.extension.CatPhotoManager;
 import org.wahlzeit.services.*;
 import org.wahlzeit.servlets.AbstractServlet;
 
@@ -31,7 +33,13 @@ public abstract class ModelMain extends AbstractMain {
 		
  		loadGlobals();
 
-		PhotoFactory.initialize();
+		if (ExtensionConfig.UseCatPhotoExtension) {
+			CatPhotoFactory.initialize();
+			CatPhotoManager.initialize();
+		} else {
+			PhotoFactory.initialize();
+			PhotoManager.initialize();
+		}
 	}
 	
 	/**

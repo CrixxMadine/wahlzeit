@@ -16,17 +16,29 @@ import org.wahlzeit.services.*;
  * A photo manager provides access to and manages photos.
  */
 public class PhotoManager extends ObjectManager {
-	
+
+	public static synchronized void initialize() {
+		if (instance == null) {
+			initialize(new PhotoManager());
+		}
+	}
+
+	protected static synchronized void initialize(PhotoManager manger) {
+		if (instance == null) {
+			instance = manger;
+		}
+	}
+
 	/**
 	 * 
 	 */
-	protected static final PhotoManager instance = new PhotoManager();
+	protected static PhotoManager instance;
 
 	/**
 	 * In-memory cache for photos
 	 */
 	protected Map<PhotoId, Photo> photoCache = new HashMap<PhotoId, Photo>();
-	
+
 	/**
 	 * 
 	 */
@@ -35,7 +47,10 @@ public class PhotoManager extends ObjectManager {
 	/**
 	 * 
 	 */
-	public static final PhotoManager getInstance() {
+	public static PhotoManager getInstance() {
+		if (instance == null) {
+			initialize();
+		}
 		return instance;
 	}
 	
@@ -64,7 +79,7 @@ public class PhotoManager extends ObjectManager {
 	 * 
 	 */
 	public static final Photo getPhoto(PhotoId id) {
-		return instance.getPhotoFromId(id);
+		return getInstance().getPhotoFromId(id);
 	}
 	
 	/**
