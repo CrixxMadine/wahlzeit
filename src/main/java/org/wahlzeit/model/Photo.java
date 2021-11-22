@@ -16,12 +16,6 @@ import org.wahlzeit.utils.*;
  */
 public class Photo extends DataObject {
 
-	private static class ColumnLabels {
-		public static final String X_COORDINATE = "x_coordinate";
-		public static final String Y_COORDINATE = "y_coordinate";
-		public static final String Z_COORDINATE = "z_coordinate";
-	}
-
 	/**
 	 * 
 	 */
@@ -74,7 +68,7 @@ public class Photo extends DataObject {
 	protected int height;
 	protected PhotoSize maxPhotoSize = PhotoSize.MEDIUM; // derived
 
-	protected Location location = new Location(new Coordinate(0,0,0));
+	protected Location location;
 
 	/**
 	 * 
@@ -158,11 +152,14 @@ public class Photo extends DataObject {
 
 		maxPhotoSize = PhotoSize.getFromWidthHeight(width, height);
 
-		var x_coordinate = rset.getDouble(ColumnLabels.X_COORDINATE);
-		var y_coordinate = rset.getDouble(ColumnLabels.Y_COORDINATE);
-		var z_coordinate = rset.getDouble(ColumnLabels.Z_COORDINATE);
-		var coordinate = new Coordinate(x_coordinate, y_coordinate, z_coordinate);
-		location = new Location(coordinate);
+		// Referenced coordinate be replaced by any other implementation of coordinate if desired
+		Coordinate typeReference;
+		if (this.location != null) {
+			typeReference = this.location.getCoordinate();
+		} else {
+			typeReference = new CartesianCoordinate(0,0,0); // default is cartesian
+		}
+		location = Location.readFrom(rset, typeReference);
 	}
 	
 	/**
@@ -184,9 +181,7 @@ public class Photo extends DataObject {
 		rset.updateInt("no_votes", noVotes);
 		rset.updateLong("creation_time", creationTime);
 
-		rset.updateDouble(ColumnLabels.X_COORDINATE, location.getCoordinate().getX());
-		rset.updateDouble(ColumnLabels.Y_COORDINATE, location.getCoordinate().getY());
-		rset.updateDouble(ColumnLabels.Z_COORDINATE, location.getCoordinate().getZ());
+		this.location.writeOn(rset);
 	}
 
 	/**

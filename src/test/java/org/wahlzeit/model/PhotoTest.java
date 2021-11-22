@@ -15,7 +15,7 @@ public class PhotoTest {
 
         final ResultSet resultSet = new FakeResultSet();
 
-        var coordinate = new Coordinate(1,2,3);
+        var coordinate = new CartesianCoordinate(1,2,3);
         var location = new Location(coordinate);
 
         var photoToBeStored = new Photo();

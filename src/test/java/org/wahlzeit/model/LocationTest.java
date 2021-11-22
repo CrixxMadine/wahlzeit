@@ -7,8 +7,8 @@ public class LocationTest {
 
     @Test
     public void testConstructorWithValidArgument() {
-        var coordinate1 = new Coordinate(0,0,0);
-        var coordinate2 = new Coordinate(10, -3, 20);
+        var coordinate1 = new CartesianCoordinate(0,0,0);
+        var coordinate2 = new SphericCoordinate(10, 6, 20);
 
         var location1 = new Location(coordinate1);
         var location2 = new Location(coordinate2);
