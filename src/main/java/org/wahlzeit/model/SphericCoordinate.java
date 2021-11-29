@@ -7,47 +7,47 @@ import java.util.Objects;
  */
 public final class SphericCoordinate extends AbstractCoordinate {
     private final double radius;
-    private final double theta;
-    private final double phi;
+    private final double latitude;
+    private final double longitude;
 
 
     /**
      * Constructor for spherical coordinates. The input ranges are limited.
      * @param radius Must not be negative (range is [0, +Infinity])
-     * @param theta  Must be in range [0,180)
-     * @param phi    Must be in range [0,360)
+     * @param latitude Must be in range [0,180)
+     * @param longitude Must be in range [0,360)
      */
-    public SphericCoordinate(double radius, double theta, double phi) {
+    public SphericCoordinate(double radius, double latitude, double longitude) {
         if (radius < 0) {
             throw new IllegalArgumentException("Radius can not be negative");
-        } else if (theta < 0 || theta >= 180) {
+        } else if (latitude < 0 || latitude >= 180) {
             throw new IllegalArgumentException("Theta must be defined in range [0,180)");
-        } else if (phi < 0 || phi >= 360) {
+        } else if (longitude < 0 || longitude >= 360) {
             throw new IllegalArgumentException("Phi must be defined in range [0,360)");
         }
 
         this.radius = radius;
-        this.theta = theta;
-        this.phi = phi;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public double getRadius() {
         return this.radius;
     }
 
-    public double getTheta() {
-        return this.theta;
+    public double getLatitude() {
+        return this.latitude;
     }
 
-    public double getPhi() { return this.phi; }
+    public double getLongitude() { return this.longitude; }
 
     @Override
     public CartesianCoordinate asCartesianCoordinate() {
 
-        var sin_theta = Math.sin(theta);
-        var cos_theta = Math.cos(theta);
-        var sin_phi = Math.sin(phi);
-        var cos_phi = Math.cos(phi);
+        var sin_theta = Math.sin(latitude);
+        var cos_theta = Math.cos(latitude);
+        var sin_phi = Math.sin(longitude);
+        var cos_phi = Math.cos(longitude);
 
         var x = radius * sin_theta * cos_phi;
         var y = radius * sin_theta * sin_phi;
@@ -63,6 +63,6 @@ public final class SphericCoordinate extends AbstractCoordinate {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getPhi(), getTheta(), getRadius());
+        return Objects.hash(super.hashCode(), getLongitude(), getLatitude(), getRadius());
     }
 }

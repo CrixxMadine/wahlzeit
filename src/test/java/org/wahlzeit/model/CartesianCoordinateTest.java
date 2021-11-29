@@ -48,7 +48,7 @@ public class CartesianCoordinateTest {
         var spheric = cartesian.asSphericCoordinate();
 
         assertEquals(spheric.getRadius(), 3.7416573867739413, ACCEPTED_DELTA);
-        assertEquals(spheric.getTheta(), 0.6405223126794245, ACCEPTED_DELTA);
-        assertEquals(spheric.getPhi(), 1.1071487177940904, ACCEPTED_DELTA);
+        assertEquals(spheric.getLatitude(), 0.6405223126794245, ACCEPTED_DELTA);
+        assertEquals(spheric.getLongitude(), 1.1071487177940904, ACCEPTED_DELTA);
     }
 }

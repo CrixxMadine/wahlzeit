@@ -4,6 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
+/**
+ * This is the base class for Coordinate implementations in 3 dimensions
+ * Used cartesian representation to read and write coordinates from database
+ */
 public abstract class AbstractCoordinate implements Coordinate {
 
     private static class ColumnLabels {
@@ -22,7 +26,7 @@ public abstract class AbstractCoordinate implements Coordinate {
      * Calculates the direct Cartesian distance between this coordinate and another
      * @param other  Coordinate for distance calculation, not null
      * @return direct Cartesian distance
-     * @throws IllegalArgumentException  when provided argument was null
+     * @throws IllegalArgumentException  when provided argument was null (unchecked)
      */
     @Override
     public double getCartesianDistance(Coordinate other) {
@@ -47,6 +51,7 @@ public abstract class AbstractCoordinate implements Coordinate {
      * Calculates the great central angle between two coordinates using float64 precision
      * For reference see: https://en.wikipedia.org/wiki/Great-circle_distance
      * @return The calculated great central angle
+     * @throws IllegalArgumentException when resultSet is null (unchecked)
      */
     @Override
     public double getCentralAngle(Coordinate other) {
@@ -57,11 +62,11 @@ public abstract class AbstractCoordinate implements Coordinate {
         var thisSpheric = this.asSphericCoordinate();
         var otherSpheric = other.asSphericCoordinate();
 
-        var thisPhi = thisSpheric.getPhi();
-        var otherPhi = otherSpheric.getPhi();
+        var thisPhi = thisSpheric.getLongitude();
+        var otherPhi = otherSpheric.getLongitude();
         
-        var thisTheta = thisSpheric.getTheta();
-        var otherTheta = otherSpheric.getTheta();
+        var thisTheta = thisSpheric.getLatitude();
+        var otherTheta = otherSpheric.getLatitude();
         var deltaTheta = Math.abs(thisTheta - otherTheta);
 
         var leftSummand = Math.sin(thisPhi) * Math.sin(otherPhi);
@@ -75,7 +80,7 @@ public abstract class AbstractCoordinate implements Coordinate {
      * Returns true when the finite distance between this and other coordinate is less or equal to threshold epsilon
      * For not finite distance between coordinates returns true when all cartesian fields are equal
      * It is valid to compare different types of coordinates, like Cartesian and Spheric
-     * @param other  Coordinate for comparison, may be null
+     * @param other  Coordinate for comparison, may be null (unchecked)
      */
     @Override
     public boolean isEqual(Coordinate other) {
@@ -109,6 +114,15 @@ public abstract class AbstractCoordinate implements Coordinate {
                 Double.compare(left.getZ(), right.getZ()) == 0;
     }
 
+    /**
+     * Default implementation to read coordinates from database
+     * Uses cartesian coordinates for representation
+     * Can be overridden in subclass
+     * @param resultSet SQL result set containing column labels for cartesian coordinate
+     * @return instance of CartesianCoordinate
+     * @throws SQLException rethrown from result set
+     * @throws IllegalArgumentException when resultSet is null (unchecked)
+     */
     @Override
     public Coordinate readFrom(ResultSet resultSet) throws SQLException {
 
@@ -122,6 +136,14 @@ public abstract class AbstractCoordinate implements Coordinate {
         return new CartesianCoordinate(x_coordinate, y_coordinate, z_coordinate);
     }
 
+    /**
+     * Default implementation to store coordinates from database
+     * Uses cartesian coordinates for representation
+     * Can be overridden in subclass
+     * @param resultSet SQL result set containing column labels for cartesian coordinate
+     * @throws SQLException rethrown from resultSet
+     * @throws IllegalArgumentException when resultSet is null
+     */
     @Override
     public void writeOn(ResultSet resultSet) throws SQLException {
 

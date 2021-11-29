@@ -14,8 +14,8 @@ public class SphericCoordinateTest {
         var upperBoundary = new SphericCoordinate(Double.MAX_VALUE, 180-0.000001, 360-0.000001);
 
         assertEquals(normalValue.getRadius(), 1, ACCEPTED_DELTA);
-        assertEquals(lowerBoundary.getTheta(), 0, ACCEPTED_DELTA);
-        assertEquals(upperBoundary.getPhi(), 360-0.000001, ACCEPTED_DELTA);
+        assertEquals(lowerBoundary.getLatitude(), 0, ACCEPTED_DELTA);
+        assertEquals(upperBoundary.getLongitude(), 360-0.000001, ACCEPTED_DELTA);
     }
 
     @Test(expected = IllegalArgumentException.class)
