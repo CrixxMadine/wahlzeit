@@ -1,4 +1,4 @@
-package org.wahlzeit.model.fakes;
+package org.wahlzeit.model.testhelper;
 
 import java.io.InputStream;
 import java.io.Reader;

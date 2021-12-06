@@ -2,19 +2,13 @@ package org.wahlzeit.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 
 /**
- * This is the base class for Coordinate implementations in 3 dimensions
- * Used cartesian representation to read and write coordinates from database
+ * This is the base class for Coordinate implementations
+ * Used cartesian representation as default to read and write coordinates from database
  */
 public abstract class AbstractCoordinate implements Coordinate {
 
-    private static class ColumnLabels {
-        public static final String X_COORDINATE = "x_coordinate";
-        public static final String Y_COORDINATE = "y_coordinate";
-        public static final String Z_COORDINATE = "z_coordinate";
-    }
 
     /**
      * If two coordinates have a finite distance smaller or equal epsilon they are considered equal
@@ -23,65 +17,53 @@ public abstract class AbstractCoordinate implements Coordinate {
 
 
     /**
-     * Calculates the direct Cartesian distance between this coordinate and another
-     * @param other  Coordinate for distance calculation, not null
-     * @return direct Cartesian distance
-     * @throws IllegalArgumentException  when provided argument was null (unchecked)
+     * Calculates cartesian distance by deferring it to implementation of CartesianCoordinate
      */
     @Override
     public double getCartesianDistance(Coordinate other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Coordinate was null, provide valid argument");
-        }
-
-        var thisCartesian = this.asCartesianCoordinate();
-        var otherCartesian = other.asCartesianCoordinate();
-
-        double delta_x = otherCartesian.getX() - thisCartesian.getX();
-        double delta_y = otherCartesian.getY() - thisCartesian.getY();
-        double delta_z = otherCartesian.getZ() - thisCartesian.getZ();
-
-        return Math.sqrt(
-                Math.pow((delta_x),2) + Math.pow(delta_y,2) + Math.pow(delta_z,2)
-        );
+        var thisCartesian = safeConvertToCartesian(this);
+        return thisCartesian.getCartesianDistance(other);
     }
 
+    protected static CartesianCoordinate safeConvertToCartesian(Coordinate any) {
+        if (any == null) {
+            throw new IllegalArgumentException("Provided argument was null");
+        }
+
+        var anyCartesian = any.asCartesianCoordinate();
+
+        // Someone could override method in subclass
+        if (anyCartesian == null) {
+            throw new IllegalStateException("Cartesian representation of provided coordinate was null");
+        }
+
+        return anyCartesian;
+    }
 
     /**
-     * Calculates the great central angle between two coordinates using float64 precision
-     * For reference see: https://en.wikipedia.org/wiki/Great-circle_distance
-     * @return The calculated great central angle
-     * @throws IllegalArgumentException when resultSet is null (unchecked)
+     * Calculates cartesian distance by deferring it to implementation of SphericCoordinate
      */
     @Override
     public double getCentralAngle(Coordinate other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Coordinate was null, provide valid argument");
-        }
-
-        var thisSpheric = this.asSphericCoordinate();
-        var otherSpheric = other.asSphericCoordinate();
-
-        var thisPhi = thisSpheric.getLongitude();
-        var otherPhi = otherSpheric.getLongitude();
-        
-        var thisTheta = thisSpheric.getLatitude();
-        var otherTheta = otherSpheric.getLatitude();
-        var deltaTheta = Math.abs(thisTheta - otherTheta);
-
-        var leftSummand = Math.sin(thisPhi) * Math.sin(otherPhi);
-        var rightSummand = Math.cos(thisPhi) * Math.cos(otherPhi) * Math.cos(deltaTheta);
-
-        return Math.acos(leftSummand + rightSummand);
+        var thisSpheric = safeConvertToSpheric(this);
+        return thisSpheric.getCentralAngle(other);
     }
 
-    /**
-     * Compares this coordinate with another instance of Coordinate
-     * Returns true when the finite distance between this and other coordinate is less or equal to threshold epsilon
-     * For not finite distance between coordinates returns true when all cartesian fields are equal
-     * It is valid to compare different types of coordinates, like Cartesian and Spheric
-     * @param other  Coordinate for comparison, may be null (unchecked)
-     */
+    protected static SphericCoordinate safeConvertToSpheric(Coordinate any) {
+        if (any == null) {
+            throw new IllegalArgumentException("Provided argument was null");
+        }
+
+        var anySpheric = any.asSphericCoordinate();
+
+        // Someone could override method in subclass
+        if (anySpheric == null) {
+            throw new IllegalStateException("Spheric representation of provided coordinate was null");
+        }
+
+        return anySpheric;
+    }
+
     @Override
     public boolean isEqual(Coordinate other) {
         if (this == other) {
@@ -101,61 +83,29 @@ public abstract class AbstractCoordinate implements Coordinate {
             return absoluteDistance <= EPSILON_DISTANCE;
         }
         else {
-            return compareCartesianValuesExplicitly(this, other);
+            var thisCartesian = safeConvertToCartesian(this);
+            return thisCartesian.compareCartesianValuesExplicitly(other);
         }
     }
 
-    private boolean compareCartesianValuesExplicitly(Coordinate first, Coordinate second) {
-        var left = first.asCartesianCoordinate();
-        var right = second.asCartesianCoordinate();
-
-        return Double.compare(left.getX(), right.getX()) == 0 &&
-                Double.compare(left.getY(), right.getY()) == 0 &&
-                Double.compare(left.getZ(), right.getZ()) == 0;
-    }
 
     /**
-     * Default implementation to read coordinates from database
-     * Uses cartesian coordinates for representation
-     * Can be overridden in subclass
-     * @param resultSet SQL result set containing column labels for cartesian coordinate
-     * @return instance of CartesianCoordinate
-     * @throws SQLException rethrown from result set
-     * @throws IllegalArgumentException when resultSet is null (unchecked)
+     * Default reading of coordinate from database as cartesian coordinate
      */
     @Override
     public Coordinate readFrom(ResultSet resultSet) throws SQLException {
+        var thisCartesian = safeConvertToCartesian(this);
 
-        if (resultSet == null) {
-            throw new IllegalArgumentException("ResultSet must not be null");
-        }
-
-        var x_coordinate = resultSet.getDouble(ColumnLabels.X_COORDINATE);
-        var y_coordinate = resultSet.getDouble(ColumnLabels.Y_COORDINATE);
-        var z_coordinate = resultSet.getDouble(ColumnLabels.Z_COORDINATE);
-        return new CartesianCoordinate(x_coordinate, y_coordinate, z_coordinate);
+        return thisCartesian.readFrom(resultSet);
     }
 
     /**
-     * Default implementation to store coordinates from database
-     * Uses cartesian coordinates for representation
-     * Can be overridden in subclass
-     * @param resultSet SQL result set containing column labels for cartesian coordinate
-     * @throws SQLException rethrown from resultSet
-     * @throws IllegalArgumentException when resultSet is null
+     * Default writing of coordinate to database as cartesian coordinate
      */
     @Override
     public void writeOn(ResultSet resultSet) throws SQLException {
-
-        if (resultSet == null) {
-            throw new IllegalArgumentException("ResultSet must not be null");
-        }
-
-        var cartesian = this.asCartesianCoordinate();
-
-        resultSet.updateDouble(ColumnLabels.X_COORDINATE, cartesian.getX());
-        resultSet.updateDouble(ColumnLabels.Y_COORDINATE, cartesian.getY());
-        resultSet.updateDouble(ColumnLabels.Z_COORDINATE, cartesian.getZ());
+        var thisCartesian = safeConvertToCartesian(this);
+        thisCartesian.writeOn(resultSet);
     }
 
     @Override
@@ -171,9 +121,12 @@ public abstract class AbstractCoordinate implements Coordinate {
         return isEqual((Coordinate) other);
     }
 
+    /**
+     * Default hashcode that
+     */
     @Override
     public int hashCode() {
-        var cartesian = this.asCartesianCoordinate();
-        return Objects.hash(cartesian.getX(), cartesian.getY(),cartesian.getZ());
+        var cartesian = safeConvertToCartesian(this);
+        return cartesian.hashCode();
     }
 }

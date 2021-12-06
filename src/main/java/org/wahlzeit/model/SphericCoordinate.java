@@ -6,6 +6,15 @@ import java.util.Objects;
  * Implementation of the spheric coordinate in 3 dimensions
  */
 public final class SphericCoordinate extends AbstractCoordinate {
+
+    public static final int MIN_RADIUS = 0;
+
+    public static final int MIN_LATITUDE = 0;
+    public static final int UPPER_LATITUDE_LIMIT = 180;
+
+    public static final int MIN_LONGITUDE = 0;
+    public static final int UPPER_LONGITUDE_LIMIT = 360;
+
     private final double radius;
     private final double latitude;
     private final double longitude;
@@ -18,12 +27,12 @@ public final class SphericCoordinate extends AbstractCoordinate {
      * @param longitude Must be in range [0,360)
      */
     public SphericCoordinate(double radius, double latitude, double longitude) {
-        if (radius < 0) {
+        if (radius < MIN_RADIUS) {
             throw new IllegalArgumentException("Radius can not be negative");
-        } else if (latitude < 0 || latitude >= 180) {
-            throw new IllegalArgumentException("Theta must be defined in range [0,180)");
-        } else if (longitude < 0 || longitude >= 360) {
-            throw new IllegalArgumentException("Phi must be defined in range [0,360)");
+        } else if (latitude < MIN_LATITUDE || latitude >= UPPER_LATITUDE_LIMIT) {
+            throw new IllegalArgumentException("Theta must be defined in range [" + MIN_LATITUDE + "," + UPPER_LATITUDE_LIMIT +")");
+        } else if (longitude < MIN_LONGITUDE || longitude >= UPPER_LONGITUDE_LIMIT) {
+            throw new IllegalArgumentException("Phi must be defined in range [" + MIN_LONGITUDE + "," + UPPER_LONGITUDE_LIMIT +")");
         }
 
         this.radius = radius;
@@ -31,19 +40,50 @@ public final class SphericCoordinate extends AbstractCoordinate {
         this.longitude = longitude;
     }
 
-    public double getRadius() {
-        return this.radius;
-    }
+    /**
+     * Package protected accessor solely for testing purposes
+     */
+    double getRadius() { return radius; }
 
-    public double getLatitude() {
-        return this.latitude;
-    }
+    /**
+     * Package protected accessor solely for testing purposes
+     */
+    double getLatitude() { return latitude; }
 
-    public double getLongitude() { return this.longitude; }
+    /**
+     * Package protected accessor solely for testing purposes
+     */
+    double getLongitude() { return longitude; }
+
+    public static boolean isValidSphericValueRepresentation(double radius, double latitude, double longitude) {
+        return radius >= SphericCoordinate.MIN_RADIUS &&
+                latitude >= SphericCoordinate.MIN_LATITUDE && latitude < SphericCoordinate.UPPER_LATITUDE_LIMIT &&
+                longitude >= SphericCoordinate.MIN_LONGITUDE && longitude < SphericCoordinate.UPPER_LONGITUDE_LIMIT;
+    }
 
     @Override
     public CartesianCoordinate asCartesianCoordinate() {
 
+        var cartesianRepresentation = calculateCartesianRepresentation(this.radius, this.latitude, this.longitude);
+
+        var halvedRadius = this.radius / 2.0;
+        var mirroredLatitude = -1 * this.latitude + SphericCoordinate.UPPER_LATITUDE_LIMIT;
+        var mirroredLongitude = -1 * this.longitude + SphericCoordinate.UPPER_LONGITUDE_LIMIT;
+        var plausibilityCheck = calculateCartesianRepresentation(halvedRadius, mirroredLatitude, mirroredLongitude);
+
+        var origin = CartesianCoordinate.getOrigin();
+
+        // This check for plausibility is to detect errors like overflow or arithmetic errors in used libraries
+        // The mirrored spheric coordinate with halve the radius is expected to have exactly the halved cartesian distance
+        // Mostly for academic purposes included
+        assert Double.compare(
+                cartesianRepresentation.getCartesianDistance(origin),
+                2 * plausibilityCheck.getCartesianDistance(origin)) == 0;
+
+        return cartesianRepresentation;
+    }
+
+    private static CartesianCoordinate calculateCartesianRepresentation(double radius, double latitude, double longitude) {
         var sin_theta = Math.sin(latitude);
         var cos_theta = Math.cos(latitude);
         var sin_phi = Math.sin(longitude);
@@ -56,13 +96,50 @@ public final class SphericCoordinate extends AbstractCoordinate {
         return new CartesianCoordinate(x,y,z);
     }
 
+
+
     @Override
     public SphericCoordinate asSphericCoordinate() {
         return this;
     }
 
+
+    @Override
+    public double getCentralAngle(Coordinate other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Coordinate was null, provide valid argument");
+        }
+
+        var otherSpheric = AbstractCoordinate.safeConvertToSpheric(other);
+
+        var centralAngle = calculateGreatCentralAngle(this, otherSpheric);
+        var plausibilityCheck = calculateGreatCentralAngle(otherSpheric, this);
+
+        if (centralAngle < 0 || centralAngle > 360) {
+            throw new ArithmeticException("Can not calculate angle with reasonable value, result would be " + centralAngle);
+        };
+
+        // The plausibility check is to detect errors like overflow in used libraries
+        // Mostly for academic purposes included
+        assert Double.compare(centralAngle, plausibilityCheck) == 0;
+
+        return centralAngle;
+    }
+
+    private static double calculateGreatCentralAngle(SphericCoordinate first, SphericCoordinate second) {
+        var thisPhi = first.longitude;
+        var otherPhi = second.longitude;
+
+        var deltaTheta = Math.abs(first.latitude - second.latitude);
+
+        var leftSummand = Math.sin(thisPhi) * Math.sin(otherPhi);
+        var rightSummand = Math.cos(thisPhi) * Math.cos(otherPhi) * Math.cos(deltaTheta);
+
+        return Math.acos(leftSummand + rightSummand);
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getLongitude(), getLatitude(), getRadius());
+        return Objects.hash(super.hashCode(), this.longitude, this.latitude, this.radius);
     }
 }
