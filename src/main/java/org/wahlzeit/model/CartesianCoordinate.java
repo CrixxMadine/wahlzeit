@@ -53,7 +53,7 @@ public final class CartesianCoordinate extends AbstractCoordinate {
 
 
     @Override
-    public SphericCoordinate asSphericCoordinate() {
+    public SphericCoordinate asSphericCoordinate() throws ArithmeticException {
 
         var radius = Math.sqrt(Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2));
 
@@ -81,7 +81,7 @@ public final class CartesianCoordinate extends AbstractCoordinate {
 
 
     @Override
-    public double getCartesianDistance(Coordinate other) {
+    public double getCartesianDistance(Coordinate other) throws ArithmeticException, IllegalArgumentException {
         if (other == null) {
             throw new IllegalArgumentException("Coordinate was null, provide valid argument");
         }
@@ -114,7 +114,7 @@ public final class CartesianCoordinate extends AbstractCoordinate {
 
 
     @Override
-    public Coordinate readFrom(ResultSet resultSet) throws SQLException {
+    public Coordinate readFrom(ResultSet resultSet) throws SQLException, IllegalArgumentException {
 
         if (resultSet == null) {
             throw new IllegalArgumentException("ResultSet must not be null");
@@ -128,7 +128,7 @@ public final class CartesianCoordinate extends AbstractCoordinate {
 
 
     @Override
-    public void writeOn(ResultSet resultSet) throws SQLException {
+    public void writeOn(ResultSet resultSet) throws SQLException, IllegalArgumentException {
 
         if (resultSet == null) {
             throw new IllegalArgumentException("ResultSet must not be null");

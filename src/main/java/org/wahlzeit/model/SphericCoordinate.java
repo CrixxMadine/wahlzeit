@@ -25,8 +25,9 @@ public final class SphericCoordinate extends AbstractCoordinate {
      * @param radius Must not be negative (range is [0, +Infinity])
      * @param latitude Must be in range [0,180)
      * @param longitude Must be in range [0,360)
+     * @throws IllegalArgumentException When any value is out of allowed range
      */
-    public SphericCoordinate(double radius, double latitude, double longitude) {
+    public SphericCoordinate(double radius, double latitude, double longitude) throws IllegalArgumentException {
         if (radius < MIN_RADIUS) {
             throw new IllegalArgumentException("Radius can not be negative");
         } else if (latitude < MIN_LATITUDE || latitude >= UPPER_LATITUDE_LIMIT) {
@@ -76,9 +77,9 @@ public final class SphericCoordinate extends AbstractCoordinate {
         // This check for plausibility is to detect errors like overflow or arithmetic errors in used libraries
         // The mirrored spheric coordinate with halve the radius is expected to have exactly the halved cartesian distance
         // Mostly for academic purposes included
-        assert Double.compare(
+        assert (Double.compare(
                 cartesianRepresentation.getCartesianDistance(origin),
-                2 * plausibilityCheck.getCartesianDistance(origin)) == 0;
+                2 * plausibilityCheck.getCartesianDistance(origin)) == 0);
 
         return cartesianRepresentation;
     }
@@ -105,7 +106,7 @@ public final class SphericCoordinate extends AbstractCoordinate {
 
 
     @Override
-    public double getCentralAngle(Coordinate other) {
+    public double getCentralAngle(Coordinate other) throws ArithmeticException, IllegalArgumentException {
         if (other == null) {
             throw new IllegalArgumentException("Coordinate was null, provide valid argument");
         }
@@ -116,12 +117,14 @@ public final class SphericCoordinate extends AbstractCoordinate {
         var plausibilityCheck = calculateGreatCentralAngle(otherSpheric, this);
 
         if (centralAngle < 0 || centralAngle > 360) {
-            throw new ArithmeticException("Can not calculate angle with reasonable value, result would be " + centralAngle);
+            throw new ArithmeticException("Can not calculate central angle with reasonable value, result would be " + centralAngle);
         };
 
         // The plausibility check is to detect errors like overflow in used libraries
         // Mostly for academic purposes included
-        assert Double.compare(centralAngle, plausibilityCheck) == 0;
+        if (Double.compare(centralAngle, plausibilityCheck) != 0) {
+            throw new ArithmeticException("Can not calculate central angle due to arithmetic limitations");
+        };
 
         return centralAngle;
     }

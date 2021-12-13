@@ -20,7 +20,7 @@ public abstract class AbstractCoordinate implements Coordinate {
      * Calculates cartesian distance by deferring it to implementation of CartesianCoordinate
      */
     @Override
-    public double getCartesianDistance(Coordinate other) {
+    public double getCartesianDistance(Coordinate other) throws ArithmeticException, IllegalArgumentException{
         var thisCartesian = safeConvertToCartesian(this);
         return thisCartesian.getCartesianDistance(other);
     }
@@ -44,7 +44,7 @@ public abstract class AbstractCoordinate implements Coordinate {
      * Calculates cartesian distance by deferring it to implementation of SphericCoordinate
      */
     @Override
-    public double getCentralAngle(Coordinate other) {
+    public double getCentralAngle(Coordinate other) throws ArithmeticException, IllegalArgumentException{
         var thisSpheric = safeConvertToSpheric(this);
         return thisSpheric.getCentralAngle(other);
     }
@@ -73,12 +73,18 @@ public abstract class AbstractCoordinate implements Coordinate {
             return false;
         }
 
-        double distance = this.getCartesianDistance(other);
+        double calculatedDistance;
 
-        if (Double.isFinite(distance)) {
-            var absoluteDistance = distance;
-            if (distance < 0) {
-                absoluteDistance = -distance;
+        try {
+            calculatedDistance = this.getCartesianDistance(other);
+        } catch (ArithmeticException ex) {
+            calculatedDistance = Double.POSITIVE_INFINITY;
+        }
+
+        if (Double.isFinite(calculatedDistance)) {
+            var absoluteDistance = calculatedDistance;
+            if (calculatedDistance < 0) {
+                absoluteDistance = -calculatedDistance;
             }
             return absoluteDistance <= EPSILON_DISTANCE;
         }
@@ -93,7 +99,7 @@ public abstract class AbstractCoordinate implements Coordinate {
      * Default reading of coordinate from database as cartesian coordinate
      */
     @Override
-    public Coordinate readFrom(ResultSet resultSet) throws SQLException {
+    public Coordinate readFrom(ResultSet resultSet) throws SQLException, IllegalArgumentException {
         var thisCartesian = safeConvertToCartesian(this);
 
         return thisCartesian.readFrom(resultSet);
@@ -103,7 +109,7 @@ public abstract class AbstractCoordinate implements Coordinate {
      * Default writing of coordinate to database as cartesian coordinate
      */
     @Override
-    public void writeOn(ResultSet resultSet) throws SQLException {
+    public void writeOn(ResultSet resultSet) throws SQLException, IllegalArgumentException {
         var thisCartesian = safeConvertToCartesian(this);
         thisCartesian.writeOn(resultSet);
     }

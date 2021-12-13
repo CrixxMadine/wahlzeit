@@ -157,7 +157,7 @@ public class Photo extends DataObject {
 		if (this.location != null) {
 			typeReference = this.location.getCoordinate();
 		} else {
-			typeReference = new CartesianCoordinate(0,0,0); // default is cartesian
+			typeReference = CartesianCoordinate.getOrigin(); // default is cartesian
 		}
 		location = Location.readFrom(rset, typeReference);
 	}
