@@ -39,6 +39,39 @@ public class AbstractCoordinateTest {
     }
 
     @Test
+    public void testIsEqualForSphericCoordinates() {
+        var spheric10 = new SphericCoordinate(0,0,0);
+        var spheric11 = new SphericCoordinate(0,0,0);
+
+        var spheric20 = new SphericCoordinate(10_000, 100, 200);
+        var spheric21 = new SphericCoordinate(10_000, 100, 200);
+
+        assertTrue(spheric10.isEqual(spheric11));
+        assertTrue(spheric20.isEqual(spheric21));
+
+        assertFalse(spheric10.isEqual(spheric20));
+    }
+
+    @Test
+    public void testDifferentClassImplementationsOfSamePointCanBeIsEqual() {
+        var originAsCartesian = new CartesianCoordinate(0,0,0);
+        var originAsSpheric = new SphericCoordinate(0,0,0);
+
+        assertTrue(originAsCartesian.isEqual(originAsSpheric));
+    }
+
+    @Test
+    public void testPointsCanBeIsEqualWithinToleranceOfDoublePrecision() {
+        var cartesianCoordinate = new CartesianCoordinate(1,2,3);
+        var slightlyOffCartesianCoordinate = new CartesianCoordinate(1 - 0.000001, 2 + 0.0000002, 3 - 0.00005);
+
+        assertTrue(cartesianCoordinate.isEqual(slightlyOffCartesianCoordinate));
+    }
+
+
+
+
+    @Test
     public void testEqualsForCartesianCoordinates() {
         double x1 = 10;
         double y1 = 20;
@@ -94,6 +127,23 @@ public class AbstractCoordinateTest {
         assertNotEquals(sphericAsAbstract, cartesian);
     }
 
+    @Test
+    public void testIdenticalCoordinatesCanRepresentEqualityEvenIfDistanceWouldBeInfinite() {
+        var allowedCartesianPoint = new CartesianCoordinate(Double.MAX_VALUE, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        var equalCartesianPoint = new CartesianCoordinate(Double.MAX_VALUE, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+        assertEquals(allowedCartesianPoint, equalCartesianPoint);
+    }
+
+    @Test
+    public void testDifferentClassImplementationsOfSamePointCanNotEquals() {
+        var originAsCartesian = new CartesianCoordinate(0,0,0);
+        var originAsSpheric = new SphericCoordinate(0,0,0);
+
+        assertNotEquals(originAsCartesian, originAsSpheric);
+    }
+
+
     @Test()
     public void testGetHashCodeForConversionCoordinate() {
         var spheric = new SphericCoordinate(000.1, 2, 3);
@@ -106,6 +156,7 @@ public class AbstractCoordinateTest {
 
         assertNotEquals(spheric.hashCode(), cartesian.hashCode());
     }
+
 
     @Test(expected = IllegalArgumentException.class)
     public void testSafelyConvertToCartesianWithNullArgumentThrowsIllegalArgumentException() {

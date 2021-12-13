@@ -111,6 +111,13 @@ public class CartesianCoordinateTest {
         validPoint.getCartesianDistance(pointInInfinity);
     }
 
+    @Test(expected = ArithmeticException.class)
+    public void testGetCartesianDistanceLargerThanPossibleDoubleValueThrowsArithmeticException() {
+        var validPoint = new CartesianCoordinate(1,2,3);
+        var pointAtTheLimitOfDouble = new CartesianCoordinate(Double.MAX_VALUE,Double.MAX_VALUE, Double.MAX_VALUE);
+        validPoint.getCartesianDistance(pointAtTheLimitOfDouble);
+    }
+
     @Test
     public void testConversionToSpheric() {
         final double ACCEPTED_DELTA = 0.0000001;
