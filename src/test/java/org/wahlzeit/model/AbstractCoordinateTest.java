@@ -69,8 +69,6 @@ public class AbstractCoordinateTest {
     }
 
 
-
-
     @Test
     public void testEqualsForCartesianCoordinates() {
         double x1 = 10;

@@ -3,6 +3,8 @@ package org.wahlzeit.model;
 import org.junit.Test;
 import org.wahlzeit.model.testhelper.EvilNullConversionCoordinate;
 
+import java.sql.SQLException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -138,6 +140,16 @@ public class CartesianCoordinateTest {
         var cartesianAsSpheric = cartesianOrigin.asSphericCoordinate();
 
         assertEquals(sphericOrigin, cartesianAsSpheric);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullArgumentForReadFromThrowsIllegalArgumentException() throws SQLException {
+        CartesianCoordinate.getOrigin().readFrom(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullArgumentForWriteOnThrowsIllegalArgumentException() throws SQLException {
+        CartesianCoordinate.getOrigin().writeOn(null);
     }
 
 
