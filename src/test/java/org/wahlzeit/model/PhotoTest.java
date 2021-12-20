@@ -33,8 +33,6 @@ public class PhotoTest {
 
         photoToBeRead.readFrom(resultSet);
 
-        var test = coordinate.equals(photoToBeRead.location.getCoordinate());
-
         assertNotNull(photoToBeRead.location);
         assertEquals(coordinate, photoToBeRead.location.getCoordinate());
         assertEquals(photoToBeStored.location.getCoordinate(), photoToBeRead.location.getCoordinate());

@@ -1,7 +1,12 @@
 package org.wahlzeit.model;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.wahlzeit.model.testhelper.FakeResultSet;
+
+import java.sql.ResultSet;
+
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 public class LocationTest {
 
@@ -20,5 +25,43 @@ public class LocationTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWithIllegalArgumentShouldThrowException() {
         var location = new Location(null);
+    }
+
+    @Test
+    public void testReadCartesianCoordinateFromResultSet() throws Exception {
+        final ResultSet resultSet = new FakeResultSet();
+        var typeReference = new CartesianCoordinate(0,0,0);
+
+        var cartesianCoordinate = new CartesianCoordinate(1,2,3);
+        var locationToBeStored = new Location(cartesianCoordinate);
+
+
+        locationToBeStored.writeOn(resultSet);
+
+        var locationReadFromDatabase = Location.readFrom(resultSet, typeReference);
+
+        assertNotNull(locationReadFromDatabase);
+        assertTrue(locationReadFromDatabase.getCoordinate() instanceof CartesianCoordinate);
+        assertEquals(cartesianCoordinate, locationReadFromDatabase.getCoordinate());
+        assertEquals(locationToBeStored.getCoordinate(), locationReadFromDatabase.getCoordinate());
+    }
+
+    @Test
+    public void testReadSphericCoordinateFromResultSet() throws Exception {
+        final ResultSet resultSet = new FakeResultSet();
+        var typeReference = new SphericCoordinate(0,0,0);
+
+        var sphericCoordinate = new SphericCoordinate(0,20,30);
+        var locationToBeStored = new Location(sphericCoordinate);
+
+
+        locationToBeStored.writeOn(resultSet);
+
+        var locationReadFromDatabase = Location.readFrom(resultSet, typeReference);
+
+        assertNotNull(locationReadFromDatabase);
+        assertTrue(locationReadFromDatabase.getCoordinate() instanceof SphericCoordinate);
+        assertEquals(sphericCoordinate, locationReadFromDatabase.getCoordinate());
+        assertEquals(locationToBeStored.getCoordinate(), locationReadFromDatabase.getCoordinate());
     }
 }

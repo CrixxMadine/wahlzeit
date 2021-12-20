@@ -1,5 +1,7 @@
 package org.wahlzeit.model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Objects;
 
 /**
@@ -139,6 +141,12 @@ public final class SphericCoordinate extends AbstractCoordinate {
         var rightSummand = Math.cos(thisPhi) * Math.cos(otherPhi) * Math.cos(deltaTheta);
 
         return Math.acos(leftSummand + rightSummand);
+    }
+
+    @Override
+    public Coordinate readFrom(ResultSet resultSet) throws SQLException {
+        var coordinate = super.readFrom(resultSet);
+        return coordinate.asSphericCoordinate();
     }
 
     @Override
