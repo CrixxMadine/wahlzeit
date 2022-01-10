@@ -9,11 +9,16 @@ import java.util.*;
 
 import org.wahlzeit.model.*;
 import org.wahlzeit.services.*;
+import org.wahlzeit.utils.PatternInstance;
 import org.wahlzeit.webparts.*;
 
 /**
  * A handler class for a specific web form.
  */
+@PatternInstance(
+		name = "Template Method",
+		participants = {"Concrete class"}
+)
 public class SetOptionsFormHandler extends AbstractWebFormHandler {
 	
 	/**

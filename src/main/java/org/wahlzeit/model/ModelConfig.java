@@ -14,6 +14,11 @@ import org.wahlzeit.utils.*;
 /**
  * A configuration that provide easy access to Wahlzeit model configuration data.
  */
+@PatternInstance(
+		name = "Strategy",
+		participants = "Strategy",
+		comment = "Pattern is documented for the 'Localisation', see methods at the bottom"
+)
 public interface ModelConfig extends Configuration {
 		
 	// Meta stuff

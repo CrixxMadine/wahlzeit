@@ -15,6 +15,7 @@ import org.wahlzeit.model.PhotoStatus;
 import org.wahlzeit.model.UserLog;
 import org.wahlzeit.model.UserSession;
 import org.wahlzeit.utils.HtmlUtil;
+import org.wahlzeit.utils.PatternInstance;
 import org.wahlzeit.utils.StringUtil;
 import org.wahlzeit.webparts.WebPart;
 
@@ -23,6 +24,10 @@ import org.wahlzeit.webparts.WebPart;
 /**
  * A handler class for a specific web form.
  */
+@PatternInstance(
+		name = "Template Method",
+		participants = {"Concrete class"}
+)
 public class EditPhotoCaseFormHandler extends AbstractWebFormHandler {
 	
 	/**

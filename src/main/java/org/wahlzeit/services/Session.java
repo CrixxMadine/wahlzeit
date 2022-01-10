@@ -6,10 +6,17 @@
 package org.wahlzeit.services;
 
 
+import org.wahlzeit.utils.PatternInstance;
+
 /**
  * A Session object maintains a DatabaseConnection and helps track processing time. Typically, there is one for each
  * working thread, be it a system thread or a web session.
  */
+@PatternInstance(
+		name = "Facade",
+		participants = "Client",
+		comment = "Uses DatabaseConnection as Facade for interaction with Database and SysConfig"
+)
 public class Session {
 
 	/**

@@ -14,6 +14,10 @@ import org.wahlzeit.webparts.*;
 /**
  * A handler class for a specific web form.
  */
+@PatternInstance(
+		name = "Template Method",
+		participants = {"Concrete class"}
+)
 public class EditUserPhotoFormHandler extends AbstractWebFormHandler {
 
 	/**

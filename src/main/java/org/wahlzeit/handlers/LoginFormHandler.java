@@ -13,12 +13,17 @@ import org.wahlzeit.model.User;
 import org.wahlzeit.model.UserLog;
 import org.wahlzeit.model.UserManager;
 import org.wahlzeit.model.UserSession;
+import org.wahlzeit.utils.PatternInstance;
 import org.wahlzeit.utils.StringUtil;
 import org.wahlzeit.webparts.WebPart;
 
 /**
  *
  */
+@PatternInstance(
+		name = "Template Method",
+		participants = {"Concrete class"}
+)
 public class LoginFormHandler extends AbstractWebFormHandler {
 	
 	/**

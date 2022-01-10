@@ -5,6 +5,8 @@
 
 package org.wahlzeit.services;
 
+import org.wahlzeit.utils.PatternInstance;
+
 import java.sql.*;
 import java.util.*;
 
@@ -15,6 +17,11 @@ import java.util.*;
  * @author dirkriehle
  *
  */
+@PatternInstance(
+		name = "Facade",
+		participants = "Facade",
+		comment = "Subsystems are 'Connection' and 'SysConfig', it also caches statements"
+)
 public class DatabaseConnection {
 	
 	/**

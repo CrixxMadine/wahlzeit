@@ -10,12 +10,17 @@ import java.util.*;
 import org.wahlzeit.model.*;
 import org.wahlzeit.services.mailing.*;
 import org.wahlzeit.services.EmailAddress;
+import org.wahlzeit.utils.PatternInstance;
 import org.wahlzeit.utils.StringUtil;
 import org.wahlzeit.webparts.WebPart;
 
 /**
  * A handler class for a specific web form.
  */
+@PatternInstance(
+		name = "Template Method",
+		participants = {"Concrete class"}
+)
 public class EmailUserNameFormHandler extends AbstractWebFormHandler {
 	
 	/**

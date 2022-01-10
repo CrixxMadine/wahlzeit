@@ -8,11 +8,16 @@ package org.wahlzeit.handlers;
 import java.util.*;
 
 import org.wahlzeit.model.*;
+import org.wahlzeit.utils.PatternInstance;
 import org.wahlzeit.webparts.*;
 
 /**
  * A specific web form class.
  */
+@PatternInstance(
+		name = "Template Method",
+		participants = {"Concrete class"}
+)
 public class AdminUserPhotoFormHandler extends AbstractWebFormHandler {
 
 	/**

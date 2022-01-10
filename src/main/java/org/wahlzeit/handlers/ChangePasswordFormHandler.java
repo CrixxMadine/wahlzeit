@@ -11,6 +11,7 @@ import org.wahlzeit.model.AccessRights;
 import org.wahlzeit.model.User;
 import org.wahlzeit.model.UserLog;
 import org.wahlzeit.model.UserSession;
+import org.wahlzeit.utils.PatternInstance;
 import org.wahlzeit.utils.StringUtil;
 import org.wahlzeit.webparts.WebPart;
 
@@ -21,6 +22,10 @@ import org.wahlzeit.webparts.WebPart;
  * @author dirkriehle
  *
  */
+@PatternInstance(
+		name = "Template Method",
+		participants = {"Concrete class"}
+)
 public class ChangePasswordFormHandler extends AbstractWebFormHandler {
 	
 	/**

@@ -10,6 +10,7 @@ import java.util.*;
 import org.wahlzeit.model.*;
 import org.wahlzeit.services.*;
 import org.wahlzeit.services.mailing.*;
+import org.wahlzeit.utils.PatternInstance;
 import org.wahlzeit.utils.StringUtil;
 import org.wahlzeit.webparts.WebPart;
 
@@ -18,6 +19,10 @@ import org.wahlzeit.webparts.WebPart;
  * @author dirkriehle
  *
  */
+@PatternInstance(
+		name = "Template Method",
+		participants = {"Concrete class"}
+)
 public class EmailPasswordFormHandler extends AbstractWebFormHandler {
 	
 	/**
