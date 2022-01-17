@@ -46,7 +46,8 @@ public final class CatPhotoFactory extends PhotoFactory {
      */
     @Override
     public CatPhoto createPhoto() {
-        return new CatPhoto();
+        // !!! Type objects are not persisted by now !!!
+        return new CatPhoto((Cat) null);
     }
 
     /**
@@ -54,7 +55,8 @@ public final class CatPhotoFactory extends PhotoFactory {
      */
     @Override
     public CatPhoto createPhoto(PhotoId id) {
-        return new CatPhoto(id);
+        // !!! Type objects are not persisted by now !!!
+        return new CatPhoto(id, null);
     }
 
     /**
