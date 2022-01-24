@@ -2,6 +2,8 @@ package org.wahlzeit.model.extension;
 
 import org.wahlzeit.model.*;
 import org.wahlzeit.services.SysLog;
+import org.wahlzeit.utils.TraceLevel;
+import org.wahlzeit.utils.Tracer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,7 +49,22 @@ public final class CatPhotoFactory extends PhotoFactory {
     @Override
     public CatPhoto createPhoto() {
         // !!! Type objects are not persisted by now !!!
-        return new CatPhoto((Cat) null);
+        Tracer.trace("CatPhotoFactory: Method createPhoto() was called without arguments", TraceLevel.DEBUG);
+        Tracer.trace("CatPhotoFactory: Create new CatPhoto (call Constructor) with null reference of Cat argument", TraceLevel.DEBUG);
+        var catPhoto = new CatPhoto((Cat) null);
+
+        Tracer.trace("CatPhotoFactory: Return created instance of CatPhoto", TraceLevel.DEBUG);
+        return catPhoto;
+    }
+
+    public CatPhoto createPhoto(Cat cat) {
+        // !!! Type objects are not persisted by now !!!
+        Tracer.trace("CatPhotoFactory: Method createPhoto() was called with provided Cat argument", TraceLevel.DEBUG);
+        Tracer.trace("CatPhotoFactory: Create new CatPhoto (call Constructor) with unchecked Cat argument", TraceLevel.DEBUG);
+        var catPhoto = new CatPhoto(cat);
+
+        Tracer.trace("CatPhotoFactory: Return created instance of CatPhoto", TraceLevel.DEBUG);
+        return catPhoto;
     }
 
     /**
@@ -55,8 +72,12 @@ public final class CatPhotoFactory extends PhotoFactory {
      */
     @Override
     public CatPhoto createPhoto(PhotoId id) {
-        // !!! Type objects are not persisted by now !!!
-        return new CatPhoto(id, null);
+        Tracer.trace("CatPhotoFactory: Method createPhoto() was called with provided PhotoId argument", TraceLevel.DEBUG);
+        Tracer.trace("CatPhotoFactory: Create new CatPhoto (call Constructor) wit unchecked PhotoId argument and null reference of Cat argument", TraceLevel.DEBUG);
+        var catPhoto = new CatPhoto(id, null);
+
+        Tracer.trace("CatPhotoFactory: Return created instance of CatPhoto", TraceLevel.DEBUG);
+        return catPhoto;
     }
 
     /**
@@ -64,6 +85,11 @@ public final class CatPhotoFactory extends PhotoFactory {
      */
     @Override
     public CatPhoto createPhoto(ResultSet rs) throws SQLException {
-        return new CatPhoto(rs);
+        Tracer.trace("CatPhotoFactory: Method createPhoto() of CatPhotoFactory was called with provided ResultSet argument", TraceLevel.DEBUG);
+        Tracer.trace("CatPhotoFactory: Create new CatPhoto (call Constructor) wit unchecked ResultSet argument", TraceLevel.DEBUG);
+        var catPhoto = new CatPhoto(rs);
+
+        Tracer.trace("CatPhotoFactory: Return created instance of CatPhoto", TraceLevel.DEBUG);
+        return catPhoto;
     }
 }

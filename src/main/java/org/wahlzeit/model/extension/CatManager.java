@@ -2,6 +2,8 @@ package org.wahlzeit.model.extension;
 
 import org.wahlzeit.services.ObjectManager;
 import org.wahlzeit.services.Persistent;
+import org.wahlzeit.utils.TraceLevel;
+import org.wahlzeit.utils.Tracer;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -11,6 +13,8 @@ import java.util.Map;
 import java.util.Optional;
 
 public class CatManager extends ObjectManager {
+
+    private static final Object INITIALIZATION_LOCK = new Object();
 
     private final Collection<Cat> catInstances = new ArrayList<>();
 
@@ -30,8 +34,19 @@ public class CatManager extends ObjectManager {
      * Initialize the CatManager if not already initialized
      */
     public static synchronized void initialize() {
-        if (instance == null) {
-            initialize(new CatManager());
+        synchronized (INITIALIZATION_LOCK) {
+            if (instance == null) {
+                initialize(new CatManager());
+            }
+        }
+    }
+
+    /**
+     * Terminate initialized CatManager
+     */
+    public static synchronized void terminate() {
+        synchronized (INITIALIZATION_LOCK) {
+            instance = null;
         }
     }
 
@@ -39,12 +54,14 @@ public class CatManager extends ObjectManager {
      * Protected initializer using any provided instance of CatManager
      */
     protected static synchronized void initialize(CatManager manger) {
-        if (manger == null) {
-            throw new IllegalArgumentException("Did not provide an instance of CatManager");
-        }
+        synchronized (INITIALIZATION_LOCK) {
+            if (manger == null) {
+                throw new IllegalArgumentException("Did not provide an instance of CatManager");
+            }
 
-        if (instance == null) {
-            instance = manger;
+            if (instance == null) {
+                instance = manger;
+            }
         }
     }
 
@@ -144,19 +161,34 @@ public class CatManager extends ObjectManager {
             String race,
             int age) {
 
+        Tracer.trace("CatManager: Method createCatInstance(....) was called with arguments", TraceLevel.DEBUG);
+
         if (catTypeName == null || catTypeName.isBlank()) {
+            Tracer.trace("CatManager: Provided argument CatTypeName was invalid, abort method with exception", TraceLevel.DEBUG);
             throw new IllegalArgumentException("Provided cat type must not be null or empty");
         }
 
+        Tracer.trace("CatManager: Enter synchronized context of private Map 'catTypes' which stores known type", TraceLevel.DEBUG);
         synchronized (this.catTypes) {
             if (! this.catTypes.containsKey(catTypeName)) {
-                this.catTypes.put(catTypeName, new CatType(catTypeName));
+                Tracer.trace("CatManager: Provided CatTypeName '" + catTypeName + "' is not yet known as CatType", TraceLevel.DEBUG);
+                Tracer.trace("CatManager: Create new instance of CatType (call constructor) with provided CatTypeName", TraceLevel.DEBUG);
+                var catType = new CatType(catTypeName);
+
+                Tracer.trace("CatManager: Add created CatType to private Map 'catTypes", TraceLevel.DEBUG);
+                this.catTypes.put(catTypeName, catType);
             }
 
+            Tracer.trace("CatManager: Retrieve reference to known CatType from private Map 'catTypes", TraceLevel.DEBUG);
             var targetType = this.catTypes.get(catTypeName);
 
+            Tracer.trace("CatManager: Call method 'createInstance(...)' on retrieved CatType reference with provided method arguments (except arg CatTypeName)'", TraceLevel.DEBUG);
             var catInstance = targetType.createInstance(nickName, race, age);
+
+            Tracer.trace("CatManager: Add created Cat instance to private Set 'catInstances'", TraceLevel.DEBUG);
             this.catInstances.add(catInstance);
+
+            Tracer.trace("CatManager: Return created instance of Cat as return value of 'createCatInstance(...)' and leave synchronized context", TraceLevel.DEBUG);
             return catInstance;
         }
     }

@@ -14,6 +14,7 @@ import org.wahlzeit.model.extension.CatPhotoFactory;
 import org.wahlzeit.model.extension.CatPhotoManager;
 import org.wahlzeit.services.*;
 import org.wahlzeit.servlets.AbstractServlet;
+import org.wahlzeit.utils.Tracer;
 
 /**
  * A single-threaded Main class with database connection. Can be used by tools that don't want to start a server.
@@ -40,6 +41,8 @@ public abstract class ModelMain extends AbstractMain {
 			PhotoFactory.initialize();
 			PhotoManager.initialize();
 		}
+
+		Tracer.initialize(ExtensionConfig.ACTIVE_TRACE_LEVEL);
 	}
 	
 	/**

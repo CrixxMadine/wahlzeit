@@ -1,6 +1,8 @@
 package org.wahlzeit.model.extension;
 
 import org.wahlzeit.services.DataObject;
+import org.wahlzeit.utils.TraceLevel;
+import org.wahlzeit.utils.Tracer;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,20 +42,31 @@ public class CatType extends DataObject {
      * @param subTypes Optional subtypes for hierarchy, can be null or empty
      */
     public CatType(String catTypeName, CatType superType, Set<CatType> subTypes) {
+
+        Tracer.trace("CatType: Constructor was called", TraceLevel.DEBUG);
+
         if (catTypeName == null || catTypeName.isBlank()) {
+            Tracer.trace("CatType: No valid argument CatTypeName was provided, abort construction", TraceLevel.DEBUG);
             throw new IllegalArgumentException("Did not provide valid cat type name");
         }
 
+        Tracer.trace("CatType: Setting provided CatTypeName argument as immutable reference to private field 'catTypeName'", TraceLevel.DEBUG);
         this.catTypeName = catTypeName;
+
+        Tracer.trace("CatType: Setting provided (nullable) SuperType argument as mutable reference to private field 'superType'", TraceLevel.DEBUG);
         this.superType = superType;
 
         if (this.superType != null) {
+            Tracer.trace("CatType: Call method addSubType(CatType) on private field 'superType' with reference to 'this' as argument", TraceLevel.DEBUG);
             this.superType.addSubType(this);
         }
 
         if (subTypes != null) {
+            Tracer.trace("CatType: Adding content of provided argument 'subTypes' to default initialized private Set<CatType> 'subTypes'", TraceLevel.DEBUG);
             this.subTypes.addAll(subTypes);
         }
+
+        Tracer.trace("CatType: Successfully created mutable instance with valid immutable field 'catTypeName'", TraceLevel.DEBUG);
     }
 
     public String getCatTypeName() {
@@ -125,7 +138,12 @@ public class CatType extends DataObject {
      * @return No cat instance
      */
     public Cat createInstance(String nickName, String race, int age) {
-        return new Cat(this, nickName, race, age);
+        Tracer.trace("CatType: Method createInstance(...) was called with provided arguments", TraceLevel.DEBUG);
+        Tracer.trace("CatType: Create new instance of Cat (call constructor) with argument reference to 'this' CatType and provided method arguments", TraceLevel.DEBUG);
+        var cat = new Cat(this, nickName, race, age);
+
+        Tracer.trace("CatType: Return created instance of cat as return value of 'createInstance(...)'", TraceLevel.DEBUG);
+        return cat;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package org.wahlzeit.model.extension;
 
 import org.wahlzeit.services.DataObject;
+import org.wahlzeit.utils.TraceLevel;
+import org.wahlzeit.utils.Tracer;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,26 +26,41 @@ public class Cat extends DataObject {
      */
     public Cat(CatType catType, String nickName, String race, int age) {
 
+        Tracer.trace("Cat: Constructor was called with parameters", TraceLevel.DEBUG);
+
         if (catType == null) {
+            Tracer.trace("Cat: Illegal CatType provided, abort construction", TraceLevel.DEBUG);
             throw new IllegalArgumentException("Did not specify type reference for cat");
+        } else {
+            Tracer.trace("Cat: Setting argument CatType - value is " + catType.getCatTypeName(), TraceLevel.DEBUG);
+            this.catType = catType;
         }
 
         if (nickName == null || nickName.isBlank()) {
+            Tracer.trace("Cat: Illegal nickname provided, abort construction", TraceLevel.DEBUG);
             throw new IllegalArgumentException("No valid nickName provided");
+        } else {
+            Tracer.trace("Cat: Setting argument Nickname - value is " + nickName, TraceLevel.DEBUG);
+            this.nickName = nickName;
         }
 
         if (race == null || race.isBlank()) {
+            Tracer.trace("Cat: Illegal race provided, abort construction", TraceLevel.DEBUG);
             throw new IllegalArgumentException("No valid race provided");
+        } else {
+            Tracer.trace("Cat: Setting argument Race - value is " + race, TraceLevel.DEBUG);
+            this.race = race;
         }
 
         if (age < 0) {
+            Tracer.trace("Cat: Illegal age provided, abort construction", TraceLevel.DEBUG);
             throw new IllegalArgumentException("Age can not be negative");
+        } else {
+            Tracer.trace("Cat: Setting argument Age - value is " + age, TraceLevel.DEBUG);
+            this.age = age;
         }
 
-        this.catType = catType;
-        this.nickName = nickName;
-        this.race = race;
-        this.age = age;
+        Tracer.trace("Cat: Successfully created immutable instance", TraceLevel.DEBUG);
     }
 
     public CatType getCatType() {

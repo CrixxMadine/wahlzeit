@@ -2,6 +2,8 @@ package org.wahlzeit.model.extension;
 
 import org.wahlzeit.model.Photo;
 import org.wahlzeit.model.PhotoId;
+import org.wahlzeit.utils.TraceLevel;
+import org.wahlzeit.utils.Tracer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +20,14 @@ public class CatPhoto extends Photo {
      */
     public CatPhoto(Cat cat) {
         super();
+
+        Tracer.trace("CatPhoto: Constructor was called with provided Cat argument", TraceLevel.DEBUG);
+        Tracer.trace("CatPhoto: Super() constructor was called without arguments", TraceLevel.DEBUG);
+
         this.cat = cat;
+
+        Tracer.trace("CatPhoto: Setting provided Cat argument as mutable reference to protected field 'cat'", TraceLevel.DEBUG);
+        Tracer.trace("CatPhoto: Successfully created instance", TraceLevel.DEBUG);
     }
 
     /**
@@ -26,6 +35,10 @@ public class CatPhoto extends Photo {
      */
     public CatPhoto(PhotoId myId) {
         super(myId);
+
+        Tracer.trace("CatPhoto: Constructor was called with provided PhotoId argument", TraceLevel.DEBUG);
+        Tracer.trace("CatPhoto: Super(PhotoId) constructor was called with PhotoId argument", TraceLevel.DEBUG);
+        Tracer.trace("CatPhoto: Successfully created instance", TraceLevel.DEBUG);
     }
 
     /**
@@ -33,7 +46,14 @@ public class CatPhoto extends Photo {
      */
     public CatPhoto(PhotoId myId, Cat cat) {
         super(myId);
-        this.cat = null;
+
+        Tracer.trace("CatPhoto: Constructor was called with provided arguments PhotoId and Cat", TraceLevel.DEBUG);
+        Tracer.trace("CatPhoto: Super(PhotoId) constructor was called with PhotoId argument", TraceLevel.DEBUG);
+
+        this.cat = cat;
+
+        Tracer.trace("CatPhoto: Setting provided Cat argument as mutable reference to protected field 'cat'", TraceLevel.DEBUG);
+        Tracer.trace("CatPhoto: Successfully created instance", TraceLevel.DEBUG);
     }
 
     /**
@@ -41,6 +61,10 @@ public class CatPhoto extends Photo {
      */
     public CatPhoto(ResultSet resultSet) throws SQLException {
         super(resultSet);
+
+        Tracer.trace("CatPhoto: Constructor was called with provided ResultSet argument", TraceLevel.DEBUG);
+        Tracer.trace("CatPhoto: Super(ResultSet) constructor was called with ResultSet argument", TraceLevel.DEBUG);
+        Tracer.trace("CatPhoto: Successfully created instance", TraceLevel.DEBUG);
     }
 
     /**
